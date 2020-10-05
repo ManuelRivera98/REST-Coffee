@@ -5,11 +5,18 @@
   "main": "index.js",
   "author": "Manuel Rivera mr98.dev@gmail.com",
   "license": "MIT",
+  "scripts": {
+    "start": "NODE_ENV=production node server/server.js",
+    "dev": "DEBUG=app:* nodemon server/server.js"
+  },
   "dependencies": {
+    "@hapi/boom": "^9.1.0",
     "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
+    "colors": "^1.4.0",
     "express": "^4.17.1",
     "mongoose": "^5.10.7",
-    "mongoose-unique-validator": "^2.0.3"
+    "mongoose-unique-validator": "^2.0.3",
+    "underscore": "^1.11.0"
   }
 }
