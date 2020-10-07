@@ -16,7 +16,29 @@ class UsersService {
   };
 
   async updateUser(id, data, schema) {
-    const user = await this.mongoDB.update(this.collection, schema, id, data);
+    // Just update user active.
+    const conditions = { status: true };
+    const user = await this.mongoDB.update(this.collection, schema, id, data, conditions);
+    return user || {};
+  };
+
+  async getUsers(schema, conditions) {
+    const addStatusConditions = {
+      ...conditions,
+      status: true, returnValues: 'name email google role'
+    };
+    const users = await this.mongoDB.getAll(this.collection, schema, addStatusConditions);
+    return users;
+  };
+
+  async getUser(id, schema) {
+    const conditions = { status: true, returnValues: 'name email google role' }
+    const user = await this.mongoDB.get(this.collection, schema, id, conditions);
+    return user || {};
+  };
+
+  async deleteUser(id, schema) {
+    const user = await this.mongoDB.delete(this.collection, schema, id);
     return user || {};
   };
 };

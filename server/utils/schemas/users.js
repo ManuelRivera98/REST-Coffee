@@ -19,6 +19,7 @@ const userSchema = new Schema({
   password: {
     type: String,
     required: [true, 'The field password is require.'],
+    select: false,
   },
   img: {
     type: String,
@@ -37,7 +38,7 @@ const userSchema = new Schema({
     type: Boolean,
     default: true,
   }
-});
+}, { strictQuery: true });
 
 userSchema.methods.toJSON = function () {
   const userObject = this.toObject();
