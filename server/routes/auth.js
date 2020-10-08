@@ -7,12 +7,17 @@ const jwt = require('jsonwebtoken');
 const { config } = require('../config');
 // Services
 const { UsersService } = require('../services/users');
+const { ApiKeysService } = require('../services/apiKeys');
 // Schemas
 const { userSchema } = require('../utils/schemas/users');
 
 const authApi = (app) => {
   const router = express.Router();
   app.use('/auth', router);
+
+  // Instance service
+  const userService = new UsersService();
+  const apiKeyService = new ApiKeysService();
 
   router.post('/sign-up', async (req, res, next) => {
     const { body: data } = req;
@@ -35,8 +40,7 @@ const authApi = (app) => {
   router.post('/login', async (req, res, next) => {
     const { password, email, apiKeyToken } = req.body;
 
-    // Instance service
-    const userService = new UsersService();
+    if (!apiKeyToken) return next(boom.unauthorized('apiKeyToken is require.'));
 
     if (!email || !password) return next(boom.unauthorized('Email and password are require.'));
 
@@ -50,10 +54,16 @@ const authApi = (app) => {
 
       if (!passwordIsValid) return next(boom.unauthorized('Wrong email or password.'));
 
+      const apiKey = await apiKeyService.getApiKey(apiKeyToken);
+
+      if (!apiKey) return next(boom.unauthorized());
+      console.log(apiKey)
+
       const payload = {
         sub: user._id,
         name: user.name,
         email: user.email,
+        scopes: apiKey.values[0].scopes,
       };
 
       const token = jwt.sign(payload, config.jwtSecret, { expiresIn: '1h' });

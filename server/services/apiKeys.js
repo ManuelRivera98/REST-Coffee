@@ -9,7 +9,7 @@ class ApiKeysService {
   };
 
   async getApiKey(token) {
-    const apiKey = await this.mongoDB.getAll(this.collection, apiKeySchema, null, { token, });
+    const apiKey = await this.mongoDB.getAll(this.collection, apiKeySchema, {}, { token, });
     return apiKey;
   };
 };

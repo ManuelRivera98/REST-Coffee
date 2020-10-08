@@ -2,9 +2,9 @@ const { query } = require('express');
 const mongoose = require('mongoose');
 const { config } = require('../config');
 
-// Dev
-const MONGO_URI = `mongodb+srv://${config.dbUser}:${config.dbPassword}${config.dbHost}/${config.dbName}?retryWrites=true&w=majority`;
 // Prod
+const MONGO_URI = `mongodb+srv://${config.dbUser}:${config.dbPassword}${config.dbHost}/${config.dbName}?retryWrites=true&w=majority`;
+// Dev
 const URI_LOCAL = `mongodb://${config.dbLocalHost}/${config.dbName}`;
 // Helpers
 const { numberToString } = require('../utils/helpers/numberToString');

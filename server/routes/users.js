@@ -10,33 +10,39 @@ const { UsersService } = require('../services/users');
 const { userSchema } = require('../utils/schemas/users');
 // Middleware
 const { jwtAuthentication } = require('../utils/middleware/authentication');
+const { scopesValidationHandler } = require('../utils/middleware/scopesValidationHandler');
 
 const userApi = (app) => {
   const router = express.Router();
   app.use('/users', router);
 
-  router.get('/', jwtAuthentication, async (req, res, next) => {
-    // Instance service
-    const userService = new UsersService();
+  // Instance service
+  const userService = new UsersService();
 
-    const { query } = req;
-    try {
-      const users = await userService.getUsers(userSchema, query);
+  router.get('/',
+    jwtAuthentication,
+    scopesValidationHandler(['read:users']),
+    async (req, res, next) => {
 
-      res.status(200).json({
-        ok: true,
-        data: users,
-      });
-    } catch (error) {
-      next(error);
-    }
-  });
+
+      const { query } = req;
+      try {
+        const users = await userService.getUsers(userSchema, query);
+
+        res.status(200).json({
+          ok: true,
+          data: users,
+        });
+      } catch (error) {
+        next(error);
+      }
+    });
 
   router.get('/:id', jwtAuthentication, async (req, res, next) => {
     const { id } = req.params;
 
     // Instance service
-    const userService = new UsersService();
+
 
     try {
       const user = await userService.getUser(id, userSchema);
@@ -62,7 +68,7 @@ const userApi = (app) => {
     const data = _.pick(body, ['name', 'email', 'role', 'img', 'status']);
 
     // Instance service
-    const userService = new UsersService();
+
 
     try {
       const user = await userService.updateUser(id, data, userSchema);
@@ -85,7 +91,7 @@ const userApi = (app) => {
     const { id } = req.params;
 
     // Instance service
-    const userService = new UsersService();
+
 
     try {
       const user = await userService.deleteUser(id, userSchema);
