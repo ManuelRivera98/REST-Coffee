@@ -56,8 +56,7 @@ const authApi = (app) => {
 
       const apiKey = await apiKeyService.getApiKey(apiKeyToken);
 
-      if (!apiKey) return next(boom.unauthorized());
-      console.log(apiKey)
+      if (apiKey.total === 0) return next(boom.unauthorized());
 
       const payload = {
         sub: user._id,
