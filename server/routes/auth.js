@@ -10,6 +10,8 @@ const { UsersService } = require('../services/users');
 const { ApiKeysService } = require('../services/apiKeys');
 // Schemas
 const { userSchema } = require('../utils/schemas/users');
+// Helpers
+const { verify } = require('../utils/helpers/verifyTokenGoogleAApi');
 
 const authApi = (app) => {
   const router = express.Router();
@@ -75,7 +77,63 @@ const authApi = (app) => {
     } catch (error) {
       next(error);
     };
-  })
+  });
+
+  router.post('/google-api', async (req, res, next) => {
+    const { idToken, apiKeyToken } = req.body;
+
+    if (!apiKeyToken) return next(boom.unauthorized('apiKeyToken is require.'));
+    if (!idToken) return next(boom.unauthorized('idToken is required to authenticate with google-api.'));
+
+    const apiKey = await apiKeyService.getApiKey(apiKeyToken);
+    if (apiKey.total === 0) return next(boom.unauthorized());
+
+    try {
+      const googleUser = await verify(idToken);
+      const usersDB = await userService.getUsers(userSchema, {}, googleUser.email);
+      const user = usersDB.values[0];
+
+      if (user) {
+        if (!user.google) return next(boom.unauthorized('Login with your normal account'));
+
+        const payload = {
+          sub: user._id,
+          name: user.name,
+          email: user.email,
+          scopes: apiKey.values[0].scopes,
+        };
+
+        const token = jwt.sign(payload, config.jwtSecret);
+
+        res.status(200).json({
+          ok: true,
+          data: user,
+          token,
+        });
+      } else {
+        const user = await userService.createUser(googleUser, userSchema);
+
+        const payload = {
+          sub: user._id,
+          name: user.name,
+          email: user.email,
+          scopes: apiKey.values[0].scopes,
+        };
+
+        const token = jwt.sign(payload, config.jwtSecret);
+
+        res.status(201).json({
+          ok: true,
+          data: user,
+          token,
+        });
+      };
+
+      res.json(googleUser);
+    } catch (error) {
+      next(error);
+    };
+  });
 };
 
 module.exports = {

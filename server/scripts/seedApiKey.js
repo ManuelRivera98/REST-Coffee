@@ -12,6 +12,7 @@ const adminScopes = [
   'login:auth',
   'signup:auth',
   'read:users',
+  'read:user',
   'update:users',
   'delete:users',
 ];
@@ -19,6 +20,7 @@ const adminScopes = [
 const publicScopes = [
   'login:auth',
   'signup:auth',
+  'read:user',
 ];
 
 const apiKeys = [

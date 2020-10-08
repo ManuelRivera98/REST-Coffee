@@ -9,8 +9,12 @@ class UsersService {
 
   async createUser(data, userSchema) {
     const { password } = data;
-    const encryptedPassword = await bcrypt.hash(password, 10);
-    const newData = { ...data, password: encryptedPassword };
+    let newData = data;
+    if (password) {
+      const encryptedPassword = await bcrypt.hash(password, 10);
+      newData = { ...data, password: encryptedPassword };
+    };
+
     const user = await this.mongoDB.create(this.collection, userSchema, newData);
     return user || {};
   };

@@ -9,6 +9,7 @@ const config = {
   dbName: process.env.DB_NAME,
   dbLocalHost: process.env.DB_LOCAL_HOST,
   jwtSecret: process.env.AUTH_JSON_WEB_TOKEN_SECRET,
+  idClientGoogle: process.env.ID_CLIENT,
   invalidIdMessage: 'Invalid id.',
 };
 
