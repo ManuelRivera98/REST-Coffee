@@ -16,24 +16,25 @@ class UsersService {
   };
 
   async updateUser(id, data, schema) {
-    // Just update user active.
-    const conditions = { status: true };
-    const user = await this.mongoDB.update(this.collection, schema, id, data, conditions);
+    const user = await this.mongoDB.update(this.collection, schema, id, data, { status: true });
     return user || {};
   };
 
-  async getUsers(schema, conditions) {
-    const addStatusConditions = {
+  async getUsers(schema, conditions, email = false) {
+    // Add values that we are going to return
+    const addConditions = {
       ...conditions,
-      status: true, returnValues: 'name email google role'
+      returnValues: 'name email google role password',
     };
-    const users = await this.mongoDB.getAll(this.collection, schema, addStatusConditions);
+
+    const query = email ? { email, status: true, } : { status: true, };
+    const users = await this.mongoDB.getAll(this.collection, schema, addConditions, query);
     return users;
   };
 
   async getUser(id, schema) {
-    const conditions = { status: true, returnValues: 'name email google role' }
-    const user = await this.mongoDB.get(this.collection, schema, id, conditions);
+    const conditions = { returnValues: 'name email google role' }
+    const user = await this.mongoDB.get(this.collection, schema, id, conditions, { status: true });
     return user || {};
   };
 

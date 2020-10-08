@@ -8,6 +8,7 @@ const config = {
   dbHost: process.env.DB_HOST,
   dbName: process.env.DB_NAME,
   dbLocalHost: process.env.DB_LOCAL_HOST,
+  jwtSecret: process.env.AUTH_JSON_WEB_TOKEN_SECRET,
   invalidIdMessage: 'Invalid id.',
 };
 

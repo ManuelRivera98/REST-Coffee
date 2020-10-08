@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 
 // Controllers
 const { userApi } = require('./routes/users');
+const { authApi } = require('./routes/auth');
 
 // conf
 const { config } = require('./config');
@@ -21,6 +22,7 @@ app.use(bodyParser.json());
 
 // Routes
 userApi(app);
+authApi(app);
 
 // Catch 404 not found.
 app.use(notFountHandler);

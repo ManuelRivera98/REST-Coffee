@@ -8,11 +8,14 @@ const { config } = require('../config');
 const { UsersService } = require('../services/users');
 // Schemas
 const { userSchema } = require('../utils/schemas/users');
+// Middleware
+const { jwtAuthentication } = require('../utils/middleware/authentication');
+
 const userApi = (app) => {
   const router = express.Router();
   app.use('/users', router);
 
-  router.get('/', async (req, res, next) => {
+  router.get('/', jwtAuthentication, async (req, res, next) => {
     // Instance service
     const userService = new UsersService();
 
@@ -29,7 +32,7 @@ const userApi = (app) => {
     }
   });
 
-  router.get('/:id', async (req, res, next) => {
+  router.get('/:id', jwtAuthentication, async (req, res, next) => {
     const { id } = req.params;
 
     // Instance service
@@ -49,29 +52,9 @@ const userApi = (app) => {
     } catch (error) {
       next(error);
     }
-  })
-
-  router.post('/', async (req, res, next) => {
-    const { body: data } = req;
-
-    // Instance service
-    const userService = new UsersService();
-
-    try {
-      const user = await userService.createUser(data, userSchema);
-
-      res.status(201).json({
-        ok: true,
-        data: user,
-      })
-    } catch (error) {
-      next(error);
-    };
-
-
   });
 
-  router.put('/:id', async (req, res, next) => {
+  router.put('/:id', jwtAuthentication, async (req, res, next) => {
     const { id } = req.params;
     const { body } = req;
 
@@ -98,7 +81,7 @@ const userApi = (app) => {
 
   });
 
-  router.delete('/:id', async (req, res, next) => {
+  router.delete('/:id', jwtAuthentication, async (req, res, next) => {
     const { id } = req.params;
 
     // Instance service

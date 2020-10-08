@@ -1,3 +1,4 @@
+const { query } = require('express');
 const mongoose = require('mongoose');
 const { config } = require('../config');
 
@@ -33,23 +34,20 @@ class MongoLib {
 
   }
 
-  async update(collection, schema, id, data, conditions) {
+  async update(collection, schema, id, data, query) {
     const Model = this.client.model(collection, schema);
-
-    // state user on db.
-    const { status = true } = conditions;
 
     const isValid = this.client.Types.ObjectId.isValid(id);
 
     if (!isValid) return { id: config.invalidIdMessage };
 
     await this.connect();
-    const doc = await Model.findByIdAndUpdate(id, data, { new: true, runValidators: true, }).where({ status, });
+    const doc = await Model.findByIdAndUpdate(id, data, { new: true, runValidators: true, }).where(query);
     return doc;
   }
 
-  async getAll(collection, schema, conditions) {
-    const { from = 0, limit = 5, field, status = true, returnValues = '' } = conditions;
+  async getAll(collection, schema, conditions, query) {
+    const { from = 0, limit = 5, field, returnValues = '' } = conditions;
     const Model = this.client.model(collection, schema);
 
     // Converter and validation string to number
@@ -60,8 +58,8 @@ class MongoLib {
     fieldSort[field] = 1;
 
     await this.connect();
-    const total = await Model.countDocuments({ status, });
-    const docs = await Model.find({ status, }, returnValues, {
+    const total = await Model.countDocuments(query);
+    const docs = await Model.find(query, returnValues, {
       skip: fromNumber ? fromNumber : 0, limit: limitNumber ? limitNumber : 5, sort: field ? fieldSort : {}
     }).exec();
 
@@ -73,17 +71,17 @@ class MongoLib {
     return response;
   };
 
-  async get(collection, schema, id, conditions) {
+  async get(collection, schema, id, conditions, query) {
     const Model = this.client.model(collection, schema);
 
-    const { status = true, returnValues = '' } = conditions;
+    const { returnValues = '' } = conditions;
 
     const isValid = this.client.Types.ObjectId.isValid(id);
 
     if (!isValid) return { id: config.invalidIdMessage };
 
     await this.connect();
-    const doc = await Model.findById(id, returnValues).where({ status, }).exec();
+    const doc = await Model.findById(id, returnValues).where(query).exec();
     return doc;
   };
 
