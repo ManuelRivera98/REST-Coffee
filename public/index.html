@@ -13,7 +13,7 @@
   <div class="g-signin2" data-onsuccess="onSignIn"></div>
   <a href="#" onclick="signOut();">Sign out</a>
   <script>
-    function onSignIn(googleUser) {
+    async function onSignIn(googleUser) {
       var profile = googleUser.getBasicProfile();
       console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
       console.log('Name: ' + profile.getName());
@@ -21,19 +21,25 @@
       console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
 
       var id_token = googleUser.getAuthResponse().id_token;
-
       // console.log(id_token); active development.
-
-      var xhr = new XMLHttpRequest();
       // url production = https://rest-coffee.herokuapp.com/auth/google-api
-      // url dev = localhost:3000
-      xhr.open('POST', 'https://rest-coffee.herokuapp.com/auth/google-api');
-      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-      xhr.onload = function () {
-        console.log('Signed in as: ' + xhr.responseText);
+      // url dev = http://localhost:3000/auth/google-api
+      const data = {
+        idToken: id_token,
+        apiKeyToken: '806a50531afb13a79985b1c625b2f1021a92634f043cdcdb322fbf0fb3ddfc7a'
       };
-      xhr.send('idToken=' + id_token);
-    }
+
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      };
+
+      const res = await fetch('https://rest-coffee.herokuapp.com/auth/google-api', options).catch(error => console.log(error));
+      console.log(await res.json());
+    };
 
     function signOut() {
       var auth2 = gapi.auth2.getAuthInstance();

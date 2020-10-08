@@ -128,8 +128,6 @@ const authApi = (app) => {
           token,
         });
       };
-
-      res.json(googleUser);
     } catch (error) {
       next(error);
     };
