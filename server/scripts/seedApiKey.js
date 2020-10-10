@@ -19,7 +19,12 @@ const adminScopes = [
   'read:categories',
   'read:category',
   'update:category',
-  'delete:category'
+  'delete:category',
+  'create:product',
+  'update:product',
+  'delete:product',
+  'read:products',
+  'read:product'
 ];
 
 const publicScopes = [
@@ -28,6 +33,9 @@ const publicScopes = [
   'read:user',
   'read:categories',
   'read:category',
+  'read:product',
+  'read:products',
+  'update:product'
 ];
 
 const apiKeys = [
