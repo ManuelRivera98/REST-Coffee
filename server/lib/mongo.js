@@ -1,5 +1,5 @@
-const { query } = require('express');
 const mongoose = require('mongoose');
+const { categorySchema } = require('../utils/schemas/categories');
 const { config } = require('../config');
 
 // Prod
@@ -34,7 +34,8 @@ class MongoLib {
 
   }
 
-  async update(collection, schema, id, data, query) {
+  async update(
+    collection, schema, id, data, query, dataPopulate = {}, dataPopulate2 = {}) {
     const Model = this.client.model(collection, schema);
 
     const isValid = this.client.Types.ObjectId.isValid(id);
@@ -43,10 +44,23 @@ class MongoLib {
 
     await this.connect();
     const doc = await Model.findByIdAndUpdate(id, data, { new: true, runValidators: true, }).where(query);
+
+    if (Object.keys(dataPopulate).length > 0 && doc) {
+      const Model2 = this.client.model(dataPopulate.collection, dataPopulate.schema);
+      const data = await Model2.populate(doc, { path: dataPopulate.path });
+
+      if (Object.keys(dataPopulate2).length > 0) {
+        const Model3 = this.client.model(dataPopulate2.collection, dataPopulate2.schema);
+        const result = Model3.populate(data, { path: dataPopulate2.path });
+        return result;
+      }
+      return data;
+    }
+
     return doc;
   }
 
-  async getAll(collection, schema, conditions, query) {
+  async getAll(collection, schema, conditions, query, dataPopulate = {}, dataPopulate2 = {}) {
     const { from = 0, limit = 5, field, returnValues = '' } = conditions;
     const Model = this.client.model(collection, schema);
 
@@ -61,7 +75,28 @@ class MongoLib {
     const total = await Model.countDocuments(query);
     const docs = await Model.find(query, returnValues, {
       skip: fromNumber ? fromNumber : 0, limit: limitNumber ? limitNumber : 5, sort: field ? fieldSort : {}
-    }).exec();
+    });
+
+    if (Object.keys(dataPopulate).length > 0) {
+      const Model2 = this.client.model(dataPopulate.collection, dataPopulate.schema);
+      const data = await Model2.populate(docs, { path: dataPopulate.path });
+
+      if (Object.keys(dataPopulate2).length > 0) {
+        const Model3 = this.client.model(dataPopulate2.collection, dataPopulate2.schema);
+        const result = await Model3.populate(data, { path: dataPopulate2.path });
+        const res = {
+          values: result,
+          total,
+        }
+        return res;
+      };
+
+      const response = {
+        values: data,
+        total,
+      };
+      return response;
+    };
 
     const response = {
       values: docs,
@@ -71,7 +106,7 @@ class MongoLib {
     return response;
   };
 
-  async get(collection, schema, id, conditions, query) {
+  async get(collection, schema, id, conditions, query, dataPopulate = {}, dataPopulate2 = {}) {
     const Model = this.client.model(collection, schema);
 
     const { returnValues = '' } = conditions;
@@ -81,7 +116,20 @@ class MongoLib {
     if (!isValid) return { id: config.invalidIdMessage };
 
     await this.connect();
-    const doc = await Model.findById(id, returnValues).where(query).exec();
+    const doc = await Model.findById(id, returnValues).where(query);
+
+    if (Object.keys(dataPopulate).length > 0) {
+      const Model2 = this.client.model(dataPopulate.collection, dataPopulate.schema);
+      const data = await Model2.populate(doc, { path: dataPopulate.path });
+
+      if (Object.keys(dataPopulate2).length > 0) {
+        const Model3 = this.client.model(dataPopulate2.collection, dataPopulate2.schema);
+        const result = await Model3.populate(data, { path: dataPopulate2.path });
+        return result;
+      };
+
+      return data;
+    }
     return doc;
   };
 

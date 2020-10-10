@@ -99,7 +99,7 @@ const userApi = (app) => {
         if (user.id === config.invalidIdMessage) return next(boom.badData('Invalid id.'));
         if (values.length === 0) return next(boom.badRequest('Username does not exist.'));
 
-        res.status(200).json({
+        res.status(204).json({
           ok: true,
           data: user,
         });

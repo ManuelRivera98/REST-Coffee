@@ -7,6 +7,8 @@ const bodyParser = require('body-parser');
 // Controllers
 const { userApi } = require('./routes/users');
 const { authApi } = require('./routes/auth');
+const { categoryApi } = require('./routes/categories');
+const { productApi } = require('./routes/products');
 
 // conf
 const { config } = require('./config');
@@ -28,6 +30,8 @@ app.use(express.static(public));
 // Routes
 userApi(app);
 authApi(app);
+categoryApi(app);
+productApi(app);
 
 // Catch 404 not found.
 app.use(notFountHandler);

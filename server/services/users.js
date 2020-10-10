@@ -16,7 +16,7 @@ class UsersService {
     };
 
     const user = await this.mongoDB.create(this.collection, userSchema, newData);
-    return user || {};
+    return user;
   };
 
   async updateUser(id, data, schema) {
@@ -32,6 +32,11 @@ class UsersService {
     };
 
     const query = email ? { email, status: true, } : { status: true, };
+
+    if (conditions.search) {
+      const regex = new RegExp(conditions.search, 'i');
+      query.name = regex;
+    };
     const users = await this.mongoDB.getAll(this.collection, schema, addConditions, query);
     return users;
   };
