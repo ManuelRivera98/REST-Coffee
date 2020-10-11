@@ -116,6 +116,7 @@ dist
 # End of https://www.toptal.com/developers/gitignore/api/node
 
 # Files dev 
-uploads/users/*.jpg
-uploads/products/*.png
-temp
+/uploads/product/*
+/uploads/user/*
+!/uploads/product/.gitkeep
+!/uploads/user/.gitkeep
