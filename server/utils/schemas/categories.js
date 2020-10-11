@@ -10,7 +10,9 @@ const categorySchema = new Schema({
   status: {
     type: Boolean,
     default: true,
-  }
+  },
+  created: Date,
+  modified: Date,
 });
 
 module.exports = {

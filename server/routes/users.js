@@ -9,7 +9,7 @@ const { UsersService } = require('../services/users');
 // Schemas
 const { userSchema } = require('../utils/schemas/users');
 // Middleware
-const { jwtAuthentication } = require('../utils/middleware/authentication');
+const { jwtAuthentication, jwtAuthenticationParams } = require('../utils/middleware/authentication');
 const { scopesValidationHandler } = require('../utils/middleware/scopesValidationHandler');
 
 const userApi = (app) => {
@@ -107,7 +107,41 @@ const userApi = (app) => {
       } catch (error) {
         next(error);
       };
+    });
+
+  router.put('/image/:id',
+    jwtAuthentication,
+    scopesValidationHandler(['update:images']),
+    async (req, res, next) => {
+      const { id } = req.params;
+
+      if (!req.files || Object.keys(req.files).length === 0) return next(boom.badRequest('No files we are uploaded.'));
+      const { img } = req.files;
+      try {
+        const response = await userService.updateImg(id, userSchema, img);
+
+        if (!response.ok) return next(boom.badRequest(response.message));
+
+        res.status(200).json(response);
+      } catch (error) {
+        next(error);
+      };
+    });
+
+  router.get('/image/:nameImg',
+    jwtAuthenticationParams,
+    scopesValidationHandler(['read:images']),
+    async (req, res, next) => {
+      const { nameImg } = req.params;
+      try {
+        const Img = await userService.getImage(nameImg);
+
+        res.status(200).sendFile(Img);
+      } catch (error) {
+        next(error);
+      };
     })
+
 };
 
 module.exports = {

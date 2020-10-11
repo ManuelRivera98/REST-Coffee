@@ -13,8 +13,11 @@ const productSchema = new Schema({
     type: Boolean,
     default: true,
   },
+  img: String,
   category_id: { type: Schema.Types.ObjectId, ref: 'category', required: true, },
   user_id: { type: Schema.Types.ObjectId, ref: 'user', required: true },
+  created: Date,
+  modified: Date,
 });
 
 module.exports = {

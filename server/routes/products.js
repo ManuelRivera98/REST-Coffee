@@ -9,7 +9,7 @@ const { productSchema } = require('../utils/schemas/products');
 const { categorySchema } = require('../utils/schemas/categories');
 const { userSchema } = require('../utils/schemas/users');
 // Middleware
-const { jwtAuthentication } = require('../utils/middleware/authentication');
+const { jwtAuthentication, jwtAuthenticationParams } = require('../utils/middleware/authentication');
 const { scopesValidationHandler } = require('../utils/middleware/scopesValidationHandler');
 // Conf
 const { config } = require('../config');
@@ -143,6 +143,44 @@ const productApi = (app) => {
           ok: true,
           data: product,
         });
+      } catch (error) {
+        next(error);
+      };
+    });
+
+  router.put('/image/:id',
+    jwtAuthentication,
+    scopesValidationHandler(['update:images']),
+    async (req, res, next) => {
+      const { id } = req.params;
+
+      if (!req.files || Object.keys(req.files).length === 0) return next(boom.badRequest('No files we are uploaded.'));
+      const { img } = req.files;
+      try {
+        const schemas = {
+          userSchema,
+          categorySchema,
+          productSchema,
+        };
+        const response = await productService.updateImg(id, schemas, img);
+
+        if (!response.ok) return next(boom.badRequest(response.message));
+
+        res.status(200).json(response);
+      } catch (error) {
+        next(error);
+      };
+    });
+
+  router.get('/image/:nameImg',
+    jwtAuthenticationParams,
+    scopesValidationHandler(['read:images']),
+    async (req, res, next) => {
+      const { nameImg } = req.params;
+      try {
+        const Img = await productService.getImage(nameImg);
+
+        res.status(200).sendFile(Img);
       } catch (error) {
         next(error);
       };

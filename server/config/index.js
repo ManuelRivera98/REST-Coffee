@@ -11,6 +11,7 @@ const config = {
   jwtSecret: process.env.AUTH_JSON_WEB_TOKEN_SECRET,
   idClientGoogle: process.env.ID_CLIENT,
   invalidIdMessage: 'Invalid id.',
+  imgDefaultName: 'defaultImg.png',
 };
 
 module.exports = {

@@ -1,3 +1,4 @@
+const { format } = require('date-fns');
 // Lib
 const { MongoLib } = require('../lib/mongo');
 
@@ -8,7 +9,8 @@ class CategoryService {
   }
 
   async createCategory(data, schema, user_id) {
-    const newData = { ...data, user_id, };
+    const date = new Date();
+    const newData = { ...data, user_id, created: format(date, 'dd-MM-yyyy'), modified: format(date, 'dd-MM-yyyy') };
     const category = await this.mongoDB.create(this.collection, schema, newData);
     return category;
   };
@@ -55,7 +57,11 @@ class CategoryService {
       schema: userSchema,
       path: 'user_id',
     };
-    const category = await this.mongoDB.update(this.collection, categorySchema, id, data, { status: true }, dataPopulate);
+    const addData = {
+      ...data,
+      modified: format(new Date(), 'dd-MM-yyyy'),
+    };
+    const category = await this.mongoDB.update(this.collection, categorySchema, id, addData, { status: true }, dataPopulate);
     return category || {};
   };
 

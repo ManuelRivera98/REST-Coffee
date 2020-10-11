@@ -37,7 +37,13 @@ const userSchema = new Schema({
   status: {
     type: Boolean,
     default: true,
-  }
+  },
+  created: {
+    type: Date,
+  },
+  modified: {
+    type: Date,
+  },
 }, { strictQuery: true });
 
 userSchema.methods.toJSON = function () {
