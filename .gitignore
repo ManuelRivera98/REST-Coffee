@@ -118,3 +118,4 @@ dist
 # Files dev 
 uploads/users/*.jpg
 uploads/products/*.png
+temp
