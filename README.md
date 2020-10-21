@@ -1,6 +1,6 @@
 # REST COFFEE
 
-![Captura de la App](./.readme_static/screen.png)
+![Captura de la App](./.readme-static/screen.png)
 
 Api para crear categorias y productos, carga de imágenes, autenticación con jw y google api, middleware de scopes y permisos
 para la capa de servicios. Esta construida en 3 capas, las rutas o controladores los cuales tienen acceso a la capa 
