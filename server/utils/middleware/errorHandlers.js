@@ -1,8 +1,6 @@
 const boom = require('@hapi/boom');
 const { config } = require('../../config');
 
-const colors = require('colors/safe');
-
 const withErrorStack = (error, stack) => {
   if (config.dev) {
     return { ...error, stack, };

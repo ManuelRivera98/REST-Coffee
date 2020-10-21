@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { categorySchema } = require('../utils/schemas/categories');
 const { config } = require('../config');
 
 // Prod
